@@ -2,7 +2,7 @@
     "manifest_version": 2,
 
     "name": "Look Around",
-    "description": "All is for engineer's health",
+    "description": "All is for engineer's health. Replace new tab page with a list of OSChina News.",
     "version": "1.0",
     "chrome_url_overrides": {
         "newtab": "index.html"
