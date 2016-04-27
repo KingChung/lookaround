@@ -1,14 +1,42 @@
 ;(function(){
     var $contents = [];
-    function getSide() {
-        return Math.floor(Math.random()*99) % 2 == 0;
+    var getRotate = function() {
+        getRotate.count || (getRotate.count = 0);
+        var result = Math.floor(Math.random()*9) % 2 == 0;
+        if(result == getRotate.current) {
+            if(getRotate.count > 2) {
+                result = !result;
+            } else {
+                getRotate.count++;
+            }
+        }
+        return getRotate.current = result;
     }
 
-    //@todo
+    function isChinese(char) {
+        var pattern = /^[\u0391-\uFFE5]+$/g;
+        return pattern.test(char);
+    }
+
+    function isEnglish(char) {
+        var pattern = /[a-zA-Z]+/;
+        return pattern.test(char);
+    }
+
     function filterContent(content){
-        var res = content.substr(0, 24);
-        if(content.length > 24) {
-            return res + '###' + filterContent(content.substr(24));
+        var separator = 24, lastChar = content[separator];
+        if(isEnglish(lastChar)) {
+            while(separator < content.length) {
+                separator++;
+                if(content[separator] == ' ' || isChinese(content[separator])) {
+                    break;
+                }
+            }
+        }
+
+        var res = content.substr(0, separator);
+        if(content.length > separator) {
+            return res + '###' + filterContent(content.substr(separator));
         } else {
             return res;
         }
@@ -24,67 +52,73 @@
 
     function createContent(source) {
         var left = 0;
+        var $wrapper = $('<div class="content">');
 
-        var wrapper = document.createElement('div');
-        wrapper.setAttribute('class', 'content');
+        // Create title
+        var $title = $('<div class="ro ro-right">');
+        $title.css('left', left);
+        var titleText = '<a class="ro-title" target="_blank" href="' + source.link + '">';
+            titleText += source.title;
+            titleText += '</a>';
+        $title.html(titleText).appendTo($wrapper);
 
-        //Create title
-        var titleWrapper = document.createElement('div');
-        titleWrapper.setAttribute('class', 'ro ro-right');
-        titleWrapper.style.left = left;
-
-        var title = document.createElement('a');
-        title.setAttribute('class', 'ro-title');
-        title.setAttribute('href', source.link);
-        var txt = document.createTextNode(source.title);
-        title.appendChild(txt);
-        titleWrapper.appendChild(title);
-        wrapper.appendChild(titleWrapper);
-
-        if(source.title.length > 24) {
-            left += 24;
+        if(source.title.length > 32) {
+            left += 32
         }
 
+        // Create content
         for (var i in source.sentences) {
-            var content = document.createElement('div');
-            content.setAttribute('class', 'ro ro-' + (getSide() ? 'right' : 'left'));
-            content.style.left = (left += 24) + 'px';
+            var rotate = getRotate() ? 'right' : 'left';
+            var $content = $('<div class="ro ro-' + rotate + '">');
+            $content
+                .css('left', left+=24)
+                .appendTo($wrapper);
 
-            var sentence = document.createElement('p');
-            sentence.setAttribute('class', 'ro-content');
-            var txt = document.createTextNode(source.sentences[i]);
-            sentence.appendChild(txt);
-
-            content.appendChild(sentence);
-            wrapper.appendChild(content);
+            var $sentence = $('<p class="ro-content">');
+            $sentence
+                .text(source.sentences[i])
+                .appendTo($content);
         }
 
-        var section = document.createElement('section');
-        section.setAttribute('class', 'content-wrapper');
-        section.appendChild(wrapper);
-        return section;
+        $wrapper.css('width', left + 24);
+        return $('<section class="animated fadeIn">').append($wrapper);
     }
-    google.load("feeds", "1");
 
-    function initialize() {
-        var feed = new google.feeds.Feed("http://www.oschina.net/news/rss?show=industry");
+    function renderFeeds(entries) {
+        var $wrapper = $('#wrapper');
+        for (var i in entries) {
+            var entrie = entries[i];
+            var sentences = convertContent(entrie.contentSnippet);
+            var section = createContent({
+                title: entrie.title,
+                link: entrie.link,
+                date: entrie.publishedDate,
+                sentences: sentences
+            });
+            $wrapper.append(section);
+        }
+    }
+
+    function loadFeeds(url, callback) {
+        var feed = new google.feeds.Feed(url);
         feed.load(function(result) {
-            var main = document.getElementById('main');
-
             if (!result.error) {
-                for (var i in result.feed.entries) {
-                    var entrie = result.feed.entries[i];
-                    var content = convertContent(entrie.contentSnippet);
-                    var section = createContent({
-                        title: entrie.title,
-                        link: entrie.link,
-                        date: entrie.publishedDate,
-                        sentences: content
-                    });
-                    main.appendChild(section);
-                }
+                callback(result.feed);
             }
         });
     }
+
+    google.load("feeds", "1");
+
+    function initialize() {
+        loadFeeds('http://www.oschina.net/news/rss?show=industry', function(feed){
+            $('#title').attr('class', 'title restore animated');
+            //It will completed the animation after 4s.
+            setTimeout(function(){
+                renderFeeds(feed.entries);
+            }, 4e3);
+        });
+    }
+
     google.setOnLoadCallback(initialize);
 })();
