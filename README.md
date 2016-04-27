@@ -1,7 +1,7 @@
 # LookAround(左顾右盼)
 一切为了脖子着想。
 
-这是一款专为程序猿／媛设计的**Chrome插件**订阅器，灵感来源于[@大神](https://github.com/elsonwu)的![wai](icon24.png)脖子。现阶段数据来源于[oschina.net](http://www.oschina.net/)的RSS。
+这是一款专为程序猿／媛设计的**Chrome插件**订阅器，灵感来源于[@Elson](https://github.com/elsonwu)的![wai](icon24.png)脖子。现阶段数据来源于[oschina.net](http://www.oschina.net/)的RSS。
 
 因为遵循无（mei）证（zuo）经（hao）营原则，所以暂未上架。需要手动配置安装，不便之处，敬请谅解。
 
