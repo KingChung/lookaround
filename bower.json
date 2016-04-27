@@ -1,0 +1,23 @@
+{
+  "name": "lookaround",
+  "authors": [
+    "King Chung <kingchung@outlook.com>"
+  ],
+  "description": "For The engineer",
+  "main": "index.html",
+  "moduleType": [],
+  "keywords": [
+    "just",
+    "lood",
+    "around"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
