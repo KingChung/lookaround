@@ -33,8 +33,9 @@
         titleWrapper.setAttribute('class', 'ro ro-right');
         titleWrapper.style.left = left;
 
-        var title = document.createElement('h2');
-        title.setAttribute('class', 'ro-content');
+        var title = document.createElement('a');
+        title.setAttribute('class', 'ro-title');
+        title.setAttribute('href', source.link);
         var txt = document.createTextNode(source.title);
         title.appendChild(txt);
         titleWrapper.appendChild(title);
@@ -69,12 +70,15 @@
         var feed = new google.feeds.Feed("http://www.oschina.net/news/rss?show=industry");
         feed.load(function(result) {
             var main = document.getElementById('main');
+
             if (!result.error) {
                 for (var i in result.feed.entries) {
                     var entrie = result.feed.entries[i];
                     var content = convertContent(entrie.contentSnippet);
                     var section = createContent({
                         title: entrie.title,
+                        link: entrie.link,
+                        date: entrie.publishedDate,
                         sentences: content
                     });
                     main.appendChild(section);
