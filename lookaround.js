@@ -103,7 +103,7 @@
         var feed = new google.feeds.Feed(url);
         feed.load(function(result) {
             if (!result.error) {
-                callback(result.feed);
+                callback && callback(result.feed);
             }
         });
     }
