@@ -1,4 +1,9 @@
 ;(function(){
+    $(document).on('ready', function(){
+        var date = (new Date()).getDate()%10;
+        $('.home-background').css('background-image', 'url(https://momentumdash.com/backgrounds/0' + date + '.jpg)')
+    });
+
     var $contents = [];
     var getRotate = function() {
         getRotate.count || (getRotate.count = 0);
@@ -86,17 +91,22 @@
 
     function renderFeeds(entries) {
         var $wrapper = $('#wrapper');
-        for (var i in entries) {
-            var entrie = entries[i];
-            var sentences = convertContent(entrie.contentSnippet);
-            var section = createContent({
-                title: entrie.title,
-                link: entrie.link,
-                date: entrie.publishedDate,
-                sentences: sentences
-            });
-            $wrapper.append(section);
-        }
+        $('#wrapper')
+            .fadeOut(function(){
+                $(this).empty();
+                for (var i in entries) {
+                    var entrie = entries[i];
+                    var sentences = convertContent(entrie.contentSnippet);
+                    var section = createContent({
+                        title: entrie.title,
+                        link: entrie.link,
+                        date: entrie.publishedDate,
+                        sentences: sentences
+                    });
+                    $(this).append(section);
+                }
+            })
+            .fadeIn();
     }
 
     function loadFeeds(url, callback) {
@@ -111,14 +121,24 @@
     google.load("feeds", "1");
 
     function initialize() {
-        loadFeeds('http://www.oschina.net/news/rss?show=industry', function(feed){
-            $('#title').attr('class', 'title restore animated');
-            //It will completed the animation after 4s.
-            setTimeout(function(){
-                renderFeeds(feed.entries);
-            }, 4e3);
+        chrome.storage.sync.get('lookaround_rss', function(items){
+            var url = items.lookaround_rss || 'http://www.oschina.net/news/rss?show=industry';
+            loadFeeds(url, function(feed){
+                $('#title').attr('class', 'title restore animated');
+                //It will completed the animation after 4s.
+                setTimeout(function(){
+                    $('#title').append('<span class="sub-title animated fadeIn">Look Around</span>');
+                    renderFeeds(feed.entries);
+                }, 4e3);
+            });
         });
     }
+
+    chrome.storage.onChanged.addListener(function(changes, namespace) {
+        loadFeeds(changes.lookaround_rss.newValue, function(feed){
+            renderFeeds(feed.entries);
+        });
+    });
 
     google.setOnLoadCallback(initialize);
 })();

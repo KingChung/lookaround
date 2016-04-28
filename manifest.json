@@ -3,13 +3,14 @@
 
     "name": "Look Around",
     "description": "All is for engineer's health. Replace new tab page with a list of OSChina News.",
-    "version": "1.0",
+    "version": "1.2",
     "chrome_url_overrides": {
         "newtab": "index.html"
     },
     "content_security_policy": "script-src 'self' https://www.google.com; object-src 'self'",
     "browser_action": {
-        "default_icon": "icon.png"
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
     },
     "icons": {
         "16": "icon24.png",
@@ -17,6 +18,6 @@
         "128": "icon.png"
     },
     "permissions": [
-        "activeTab"
+        "storage"
     ]
 }
