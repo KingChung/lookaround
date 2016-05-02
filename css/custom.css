@@ -85,7 +85,16 @@ a.ro-title {
     width: 600px;
     line-height: 24px;
 }
-.title-loading {
+
+.title {
+    position: absolute;
+    height: 64px;
+    width: 180px;
+    left: 50px;
+    top: 30px;
+    line-height: 32px;
+}
+.title.loading {
     position: absolute;
     height: 64px;
     width: 64px;
@@ -96,14 +105,7 @@ a.ro-title {
     margin: auto;
     line-height: 32px;
     font-size: 32px;
-}
-.title {
-    position: absolute;
-    height: 64px;
-    width: 180px;
-    left: 50px;
-    top: 30px;
-    line-height: 32px;
+    overflow: hidden;
 }
 .title .sub-title {
     font-size: 24px;

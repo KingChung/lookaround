@@ -118,24 +118,33 @@
         });
     }
 
+    function toggleTitle(toLoading) {
+        var $title = $('#title');
+        if(toggleTitle.current != void(0) && toggleTitle.current == toLoading) {
+            return true;
+        }
+        toggleTitle.current = toLoading;
+        $title.fadeOut(function(){
+            $(this).toggleClass('loading rotate infinite animated', toLoading).fadeIn(3e3);
+        });
+    }
+
     google.load("feeds", "1");
 
     function initialize() {
         chrome.storage.sync.get('lookaround_rss', function(items){
             var url = items.lookaround_rss || 'http://www.oschina.net/news/rss?show=industry';
             loadFeeds(url, function(feed){
-                $('#title').attr('class', 'title restore animated');
-                //It will completed the animation after 4s.
-                setTimeout(function(){
-                    $('#title').append('<span class="sub-title animated fadeIn">Look Around</span>');
-                    renderFeeds(feed.entries);
-                }, 4e3);
+                toggleTitle(false);
+                renderFeeds(feed.entries);
             });
         });
     }
 
     chrome.storage.onChanged.addListener(function(changes, namespace) {
+        toggleTitle(true);
         loadFeeds(changes.lookaround_rss.newValue, function(feed){
+            toggleTitle(false);
             renderFeeds(feed.entries);
         });
     });
